@@ -1,0 +1,159 @@
+---
+import { Image } from "astro:assets";
+import mvTextSvg from "../assets/mv_text.svg";
+import balloonPng from "../assets/balloon.png";
+---
+
+<div class="main-visual">
+  <div class="main-visual__inner">
+
+    <div class="main-visual__slider swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide slide-1">
+          <Image class="slide-1__copy" src={ mvTextSvg } alt={ `ハロウィーン！` } />
+        </div>
+        <div class="swiper-slide slide-2">
+          <Image class="slide-2__balloon" src={ balloonPng } alt={ `Balloon` } />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style lang="scss">
+  .main-visual__slider .swiper-slide {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .slide-1,
+  .slide-2 {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .slide-1 {
+    background-image: url(../assets/slide_1.jpg);
+  }
+
+  .slide-1__copy {
+    width: auto;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 10%;
+  }
+
+  .slide-2 {
+    background-image: url(../assets/slide_2.jpg);
+    position: relative;
+  }
+
+  .slide-2__balloon {
+    width: 256px;
+    aspect-ratio: 1;
+    position: absolute;
+    top: 12%;
+    left: 8vw;
+  }
+</style>
+
+<script>
+  import Swiper from "swiper/bundle";
+  import "swiper/css/bundle";
+  import { gsap, Back } from "gsap";
+
+  gsap.set(".slide-1__copy", {
+    scale: 0,
+    rotate: "15deg",
+    opacity: 0,
+  });
+
+  gsap.set(".slide-2__balloon", {
+    scale: 0,
+    opacity: 0,
+  });
+
+  const mvSlider = new Swiper(".main-visual__slider", {
+    slidesPerView: 1,
+    loop: true,
+    speed: 1000,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    }
+  });
+
+  gsap.to(".slide-1__copy", {
+    delay: 0.3,
+    scale: 1,
+    rotate: "0",
+    opacity: 1,
+    duration: 0.75,
+  });
+
+  let isCarouselFirstLoop = true;
+  let activeSlideIndexNumbers: Array<number> = [];
+  mvSlider.on("transitionEnd", (e) => {
+    if (isCarouselFirstLoop) {
+      if (e.realIndex === 1) {
+        gsap.to(".slide-2__balloon", {
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          ease: Back.easeOut
+        });
+
+        gsap.set(".slide-1__copy", {
+          scale: 0,
+          rotate: "15deg",
+          opacity: 0,
+        });
+
+        isCarouselFirstLoop = !isCarouselFirstLoop;
+      }
+    } else {
+      activeSlideIndexNumbers.push(e.realIndex);
+      if (activeSlideIndexNumbers.length === 2) {
+        const newRealIndex = activeSlideIndexNumbers.join("");
+
+        if (newRealIndex === "10") {
+          console.log("スライドの一枚目");
+
+          gsap.to(".slide-1__copy", {
+            scale: 1,
+            rotate: "0",
+            opacity: 1,
+            duration: 0.75,
+          });
+
+          gsap.set(".slide-2__balloon", {
+            scale: 0,
+            opacity: 0,
+          });
+        }
+
+        if (newRealIndex === "01") {
+          console.log("スライドの二枚目");
+
+          gsap.to(".slide-2__balloon", {
+            scale: 1,
+            opacity: 1,
+            duration: 0.5,
+            ease: Back.easeOut
+          });
+
+          gsap.set(".slide-1__copy", {
+            scale: 0,
+            rotate: "15deg",
+            opacity: 0,
+          });
+        }
+
+        activeSlideIndexNumbers.length = 0;
+      }
+    }
+  });
+
+</script>

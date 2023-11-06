@@ -1,0 +1,12 @@
+@use "mixins" as *;
+@use "colors" as *;
+@use "reset" as *;
+
+body {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+
+  &.js-loaded {
+    opacity: 1;
+  }
+}
